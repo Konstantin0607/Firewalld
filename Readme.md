@@ -57,7 +57,7 @@
             /etc/knockd.conf
 
 
-options]
+[options]
 	UseSyslog
 
 [opencloseSSH]
