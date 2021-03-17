@@ -9,29 +9,29 @@
 #Данный конфиг говорит на следующее - если был перебор портов с последовательностью портов 2222 3333 4444, то открыть порт 22 на 30 секунд. Уже установленные SSH соединения не будут отброшены, так как есть специальная таблица уже установленных соединений conntrack, и если там будет соединение то его файервол сбрасывать не будет 
 
 
-cat <<EOT | iptables-restore
-*filter
-:INPUT DROP [0:0]
-:FORWARD ACCEPT [12816:43815755]
-:OUTPUT ACCEPT [106:11577]
-:SSH-INPUT - [0:0]
-:SSH-INPUTTWO - [0:0]
-:TRAFFIC - [0:0]
--A INPUT -j TRAFFIC
--A SSH-INPUT -m recent --set --name SSH1 --mask 255.255.255.255 --rsource -j DROP
--A SSH-INPUTTWO -m recent --set --name SSH2 --mask 255.255.255.255 --rsource -j DROP
--A TRAFFIC -p icmp -m icmp --icmp-type any -j ACCEPT
--A TRAFFIC -m state --state RELATED,ESTABLISHED -j ACCEPT
--A TRAFFIC -p tcp -m state --state NEW -m tcp --dport 22 -m recent --rcheck --seconds 30 --name SSH2 --mask 255.255.255.255 --rsource -j ACCEPT
--A TRAFFIC -p tcp -m state --state NEW -m tcp -m recent --remove --name SSH2 --mask 255.255.255.255 --rsource -j DROP
--A TRAFFIC -p tcp -m state --state NEW -m tcp --dport 4444 -m recent --rcheck --name SSH1 --mask 255.255.255.255 --rsource -j SSH-INPUTTWO
--A TRAFFIC -p tcp -m state --state NEW -m tcp -m recent --remove --name SSH1 --mask 255.255.255.255 --rsource -j DROP
--A TRAFFIC -p tcp -m state --state NEW -m tcp --dport 3333 -m recent --rcheck --name SSH0 --mask 255.255.255.255 --rsource -j SSH-INPUT
--A TRAFFIC -p tcp -m state --state NEW -m tcp -m recent --remove --name SSH0 --mask 255.255.255.255 --rsource -j DROP
--A TRAFFIC -p tcp -m state --state NEW -m tcp --dport 2222 -m recent --set --name SSH0 --mask 255.255.255.255 --rsource -j DROP
--A TRAFFIC -j DROP
-COMMIT
-EOT
+            cat <<EOT | iptables-restore
+            *filter
+            :INPUT DROP [0:0]
+            :FORWARD ACCEPT [12816:43815755]
+            :OUTPUT ACCEPT [106:11577]
+            :SSH-INPUT - [0:0]
+            :SSH-INPUTTWO - [0:0]
+            :TRAFFIC - [0:0]
+            -A INPUT -j TRAFFIC
+            -A SSH-INPUT -m recent --set --name SSH1 --mask 255.255.255.255 --rsource -j DROP
+            -A SSH-INPUTTWO -m recent --set --name SSH2 --mask 255.255.255.255 --rsource -j DROP
+            -A TRAFFIC -p icmp -m icmp --icmp-type any -j ACCEPT
+            -A TRAFFIC -m state --state RELATED,ESTABLISHED -j ACCEPT
+            -A TRAFFIC -p tcp -m state --state NEW -m tcp --dport 22 -m recent --rcheck --seconds 30 --name SSH2 --mask 255.255.255.255 --rsource -j ACCEPT
+            -A TRAFFIC -p tcp -m state --state NEW -m tcp -m recent --remove --name SSH2 --mask 255.255.255.255 --rsource -j DROP
+            -A TRAFFIC -p tcp -m state --state NEW -m tcp --dport 4444 -m recent --rcheck --name SSH1 --mask 255.255.255.255 --rsource -j SSH-INPUTTWO
+            -A TRAFFIC -p tcp -m state --state NEW -m tcp -m recent --remove --name SSH1 --mask 255.255.255.255 --rsource -j DROP
+            -A TRAFFIC -p tcp -m state --state NEW -m tcp --dport 3333 -m recent --rcheck --name SSH0 --mask 255.255.255.255 --rsource -j SSH-INPUT
+            -A TRAFFIC -p tcp -m state --state NEW -m tcp -m recent --remove --name SSH0 --mask 255.255.255.255 --rsource -j DROP
+            -A TRAFFIC -p tcp -m state --state NEW -m tcp --dport 2222 -m recent --set --name SSH0 --mask 255.255.255.255 --rsource -j DROP
+            -A TRAFFIC -j DROP
+            COMMIT
+            EOT
 
 #Использование таких программ как knock 
 #Вообще в процессе работы с этой программой выяснилось что это сыроватая программа (старая),
